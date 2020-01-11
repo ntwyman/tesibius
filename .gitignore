@@ -1,0 +1,17 @@
+codegentemp/
+CortexM0/
+Generated_Source/
+Export/
+*.cyfit
+*.svd
+*.schPreview
+*.pcbPreview
+*.log
+*.drc
+*.html
+*.rpt
+*.old
+*.prev
+*.cycdx
+*.cyprj.*
+*.cywrk.*
