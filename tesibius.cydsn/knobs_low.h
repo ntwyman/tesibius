@@ -1,20 +1,18 @@
 #pragma once
-/** @file Knob scanning low level driver. 
+/** @file Knob scanning low level driver.
 Most of the state machine runs in interrupt context.
 */
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-#define KNOBS_COUNT             9
-#define KNOBS_ADC_HYSTERESIS    16
+#define KNOBS_COUNT 9
+#define KNOBS_ADC_HYSTERESIS 16
 
-/** 
+/**
 Contains normalized 8 bit knob values.
 */
-union knob_values
-{
-    struct 
-    {
+union knob_values {
+    struct {
         uint8_t gain;
         uint8_t bite;
         uint8_t bass;
@@ -43,4 +41,4 @@ Get the latest knob values.
 @return true if values have changed since previous call.
 */
 bool
-knobs_get(union knob_values * values);
+knobs_get(union knob_values* values);

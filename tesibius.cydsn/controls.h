@@ -13,10 +13,10 @@ enum controls
     CONTROL_REVERB,
     CONTROL_MASTER,
     CONTROL_LEDS,
-};  
+};
 
-#define GAIN_CHANNEL_1  1
-#define GAIN_CHANNEL_2  0
+#define GAIN_CHANNEL_1 1
+#define GAIN_CHANNEL_2 0
 #define GAIN_BIT 1
 
 /**

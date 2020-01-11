@@ -1,10 +1,10 @@
-#include "project.h"
 #include "buttons_low.h"
+#include "project.h"
 
-#define BUTTON_PIN_CLK  0x01
-#define BUTTON_PIN_PL   0x02
+#define BUTTON_PIN_CLK 0x01
+#define BUTTON_PIN_PL 0x02
 
-void 
+void
 buttons_init(void)
 {
     /* Set PL high, clock low. */
@@ -27,7 +27,7 @@ buttons_scan(void)
         pin_btn_op_Write(BUTTON_PIN_PL | BUTTON_PIN_CLK);
         CyDelayUs(1);
         pin_btn_op_Write(BUTTON_PIN_PL);
-        CyDelayUs(1);    
+        CyDelayUs(1);
     }
     result = ~result & BUTTON_MASK; /* Button hardware is active low */
     return result;

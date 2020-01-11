@@ -1,0 +1,12 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*.{.c, .h, .md, .cywrk, .cydwr, .cyprj}]
+    end_of_line: crlf
+
+[*.{.c, .h}]
+    indent_style = space
+    indent_size = 4
+

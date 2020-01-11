@@ -1,15 +1,14 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "project.h"
-#include "knobs_low.h"
 #include "controls.h"
+#include "knobs_low.h"
+#include "project.h"
 
-struct knobs_ctx
-{
-    int     channel_num;
-    int     adc_values[KNOBS_COUNT];
-    bool    have_knobs_changed;
+struct knobs_ctx {
+    int channel_num;
+    int adc_values[KNOBS_COUNT];
+    bool have_knobs_changed;
 };
 
 static struct knobs_ctx ctx;
@@ -30,11 +29,11 @@ CY_ISR(on_adc_conversion_complete)
     }
     if (abs(value - ctx.adc_values[channel]) > KNOBS_ADC_HYSTERESIS)
     {
-        ctx.have_knobs_changed = true;
+        ctx.have_knobs_changed  = true;
         ctx.adc_values[channel] = value;
     }
     isr_adc_ClearPending();
-    adc_sar_StartConvert();    
+    adc_sar_StartConvert();
 }
 
 void
@@ -59,7 +58,7 @@ knobs_stop(void)
 }
 
 bool
-knobs_get(union knob_values * values)
+knobs_get(union knob_values* values)
 {
     assert(values != NULL);
     for (int i = CONTROL_GAIN; i <= CONTROL_MASTER; ++i)
