@@ -9,9 +9,8 @@
  *
  * ========================================
  */
-#include "buttons_low.h"
 #include "controls.h"
-#include "knobs_low.h"
+#include "input.h"
 #include "leds.h"
 #include "task.h"
 #include <FreeRTOS.h>
@@ -127,6 +126,12 @@ main()
     knobs_start();
 
     setupFreeRTOS();
+
+    // Periodtic timer handler to scan keyboard
+    // ADC task waiting on ADC events
+    // Midi handler waiting on midi characters
+    // Event loop waiting on events
+
     /* Create LED task, which will control the intensity of the LEDs */
     xTaskCreateStatic(LED_Task,         /* Task function */
                       "LED Blink",      /* Task name (string) */

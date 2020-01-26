@@ -6,3 +6,8 @@
 #else
 #define DEBUG_PRINT(...)
 #endif
+
+#define INIT_ASSERT(x, msg)                                                    \
+    printf("Assertion failed - %s", msg);                                      \
+    for (;;)                                                                   \
+        ;

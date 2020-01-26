@@ -2,17 +2,17 @@
 #include "project.h"
 
 #define BUTTON_PIN_CLK 0x01
-#define BUTTON_PIN_PL 0x02
+#define BUTTON_PIN_PL  0x02
 
 void
-buttons_init(void)
+vButtonInit(void)
 {
     /* Set PL high, clock low. */
     pin_btn_op_Write(BUTTON_PIN_PL);
 }
 
-int
-buttons_scan(void)
+uint16_t
+usButtonScan(void)
 {
     int result = 0;
     /* Pulse the parallel load pin low for 1us to latch the register */

@@ -5,7 +5,7 @@ Most of the state machine runs in interrupt context.
 #include <stdbool.h>
 #include <stdint.h>
 
-#define KNOBS_COUNT 9
+#define KNOBS_COUNT          9
 #define KNOBS_ADC_HYSTERESIS 16
 
 /**
