@@ -1,144 +1,75 @@
-/* ========================================
- *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ========================================
- */
-#include "controls.h"
-#include "input.h"
-#include "leds.h"
-#include "task.h"
-#include <FreeRTOS.h>
-#include <project.h>
 #include <stdio.h>
 
-extern void
-xPortPendSVHandler(void);
-extern void
-xPortSysTickHandler(void);
-extern void
-vPortSVCHandler(void);
+#include "project.h"
+#include "buttons_low.h"
+#include "controls.h"
+#include "knobs_low.h"
+#include "leds.h"
+#include "macros.h"
 
-#define CORTEX_INTERRUPT_BASE (16)
-void
-setupFreeRTOS()
+static const char* const knob_names[] = 
 {
-    /* Handler for Cortex Supervisor Call (SVC, formerly SWI) - address 11 */
-    CyIntSetSysVector(CORTEX_INTERRUPT_BASE + SVCall_IRQn,
-                      (cyisraddress)vPortSVCHandler);
+    [CONTROL_GAIN]     = "gain",
+    [CONTROL_BITE]     = "bite",
+    [CONTROL_BASS]     = "bass",
+    [CONTROL_MID]      = "mid",
+    [CONTROL_TREBLE]   = "treble",
+    [CONTROL_PRESENCE] = "presence",
+    [CONTROL_LEVEL]    = "level",
+    [CONTROL_REVERB]   = "reverb",
+    [CONTROL_MASTER]   = "master",
+};
 
-    /* Handler for Cortex PendSV Call - address 14 */
-    CyIntSetSysVector(CORTEX_INTERRUPT_BASE + PendSV_IRQn,
-                      (cyisraddress)xPortPendSVHandler);
-
-    /* Handler for Cortex SYSTICK - address 15 */
-    CyIntSetSysVector(CORTEX_INTERRUPT_BASE + SysTick_IRQn,
-                      (cyisraddress)xPortSysTickHandler);
-}
-
-StaticTask_t xLEDTaskCB;
-#define TASK_STACK_DEPTH 80
-StackType_t xLEDTaskStack[TASK_STACK_DEPTH];
-
-void
-LED_Task(void* arg)
+int main(void)
 {
-    (void)arg;
-
-    int led = 0x01;
-    while (1)
-    {
-        leds_set(led);
-        led ^= 0x01;
-        vTaskDelay(500);
-    }
-}
-
-/* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide
-an implementation of vApplicationGetIdleTaskMemory() to provide the memory that
-is used by the Idle task. */
-void
-vApplicationGetIdleTaskMemory(StaticTask_t** ppxIdleTaskTCBBuffer,
-                              StackType_t** ppxIdleTaskStackBuffer,
-                              uint32_t* pulIdleTaskStackSize)
-{
-    /* If the buffers to be provided to the Idle task are declared inside this
-    function then they must be declared static - otherwise they will be
-    allocated on the stack and so not exists after this function exits. */
-    static StaticTask_t xIdleTaskTCB;
-    static StackType_t uxIdleTaskStack[configMINIMAL_STACK_SIZE];
-
-    /* Pass out a pointer to the StaticTask_t structure in which the Idle task's
-    state will be stored. */
-    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
-
-    /* Pass out the array that will be used as the Idle task's stack. */
-    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
-
-    /* Pass out the size of the array pointed to by *ppxIdleTaskStackBuffer.
-    Note that, as the array is necessarily of type StackType_t,
-    configMINIMAL_STACK_SIZE is specified in words, not bytes. */
-    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
-}
-/*-----------------------------------------------------------*/
-
-/* configSUPPORT_STATIC_ALLOCATION and configUSE_TIMERS are both set to 1, so
-the application must provide an implementation of
-vApplicationGetTimerTaskMemory()
-to provide the memory that is used by the Timer service task. */
-void
-vApplicationGetTimerTaskMemory(StaticTask_t** ppxTimerTaskTCBBuffer,
-                               StackType_t** ppxTimerTaskStackBuffer,
-                               uint32_t* pulTimerTaskStackSize)
-{
-    /* If the buffers to be provided to the Timer task are declared inside this
-    function then they must be declared static - otherwise they will be
-    allocated on the stack and so not exists after this function exits. */
-    static StaticTask_t xTimerTaskTCB;
-    static StackType_t uxTimerTaskStack[configTIMER_TASK_STACK_DEPTH];
-
-    /* Pass out a pointer to the StaticTask_t structure in which the Timer
-    task's state will be stored. */
-    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
-
-    /* Pass out the array that will be used as the Timer task's stack. */
-    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
-
-    /* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
-    Note that, as the array is necessarily of type StackType_t,
-    configTIMER_TASK_STACK_DEPTH is specified in words, not bytes. */
-    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
-}
-
-int
-main()
-{
-    CyGlobalIntEnable; /* Enable global interrupts */
+    CyGlobalIntEnable; /* Enable global interrupts. */
     uart_debug_Start();
     buttons_init();
     controls_init();
     leds_set(0);
     knobs_start();
-
-    setupFreeRTOS();
-
-    // Periodtic timer handler to scan keyboard
-    // ADC task waiting on ADC events
-    // Midi handler waiting on midi characters
-    // Event loop waiting on events
-
-    /* Create LED task, which will control the intensity of the LEDs */
-    xTaskCreateStatic(LED_Task,         /* Task function */
-                      "LED Blink",      /* Task name (string) */
-                      TASK_STACK_DEPTH, /* Task stack depth*/
-                      0,                /* No param passed to task function */
-                      1,                /* Low priority */
-                      xLEDTaskStack,
-                      &xLEDTaskCB); /* Not using the task handle */
-    vTaskStartScheduler();
+    
+    union knob_values knobs      = { { 0 } };
+    union knob_values prev_knobs = { { 0 } };
+    int buttons      = 0;
+    int prev_buttons = 0;
+    int gain = GAIN_CHANNEL_1;  
+    int leds = LED_CHANNEL_1;
+    
+    printf("Hello world!\r\n");
+    pin_gain_ctrl_Write(gain);
+    leds_set(leds);
+    for ( ; ; )
+    {
+        CyDelay(100);
+        if (knobs_get(&knobs))
+        {
+            for (int j = CONTROL_GAIN; j <= CONTROL_MASTER; ++j)
+            {
+                if (knobs.values[j] != prev_knobs.values[j])
+                {
+                    printf("%s %03hu\r\n", knob_names[j], knobs.values[j]);
+                    controls_set(j, knobs.values[j]);
+                }
+            }                
+        }
+        prev_knobs = knobs;
+        buttons = buttons_scan();
+        if (buttons != prev_buttons)
+        {
+            printf("buttons 0x%04X\r\n", buttons);
+            int changed = buttons ^ prev_buttons;
+            // On gain button up
+            if ((changed & BUTTON_GAIN) && (prev_buttons & BUTTON_GAIN))
+            {
+                gain ^= GAIN_BIT;
+                pin_gain_ctrl_Write(gain);
+                leds ^= LED_CHANNEL_1|LED_CHANNEL_2;
+                leds_set(leds);
+                }
+            prev_buttons = buttons;
+        }
+    }
 }
+
+/* [] END OF FILE */

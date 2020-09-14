@@ -1,6 +1,6 @@
-#include "controls.h"
-#include "project.h"
 #include <stdio.h>
+#include "project.h"
+#include "controls.h"
 
 #define DIG_POT_CMD 0x11
 
@@ -14,7 +14,7 @@ controls_init(void)
 void
 controls_set(int id, int value)
 {
-
+    
     while (!(spi_master_ReadTxStatus() & spi_master_STS_SPI_IDLE))
         ;
     pin_spi_addr_Write(id);
