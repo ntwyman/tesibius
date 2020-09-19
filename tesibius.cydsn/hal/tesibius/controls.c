@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "project.h"
-#include "controls.h"
+#include "hal/controls.h"
 
 #define DIG_POT_CMD 0x11
 

@@ -1,12 +1,12 @@
 #include <stdio.h>
 
 #include "project.h"
-#include "buttons_low.h"
+#include "debug.h"
 #include "controls.h"
-#include "knobs_low.h"
-#include "leds.h"
-#include "macros.h"
+#include "jiffy.h"
+#include "scheduler.h"
 
+/*
 static const char* const knob_names[] = 
 {
     [CONTROL_GAIN]     = "gain",
@@ -22,7 +22,7 @@ static const char* const knob_names[] =
 
 int main(void)
 {
-    CyGlobalIntEnable; /* Enable global interrupts. */
+    CyGlobalIntEnable; // Enable global interrupts. 
     uart_debug_Start();
     buttons_init();
     controls_init();
@@ -68,8 +68,36 @@ int main(void)
                 leds_set(leds);
                 }
             prev_buttons = buttons;
-        }
+        } 
     }
 }
 
+*/
+
+#define MAJOR_VERSION 0
+#define MINOR_VERSION 1
+#define BUILD_NUM 1
+
+static void
+SysInit_()
+{
+    DebugInit();
+    ControlsInit(); // Do this first to start up as quietly as possible
+ /*   KeysInit();
+    AnimationInit();
+    MidiInit();
+*/    JiffyInit();
+    DBG_PRINTF("Tesibius, Copyright (c) Nick Twyman, 2020\r\n");
+    DBG_PRINTF("System version %d.%d.%d\r\n", MAJOR_VERSION, MINOR_VERSION, BUILD_NUM);
+    DBG_PRINTF("Flash size %d bytes\r\n", CY_FLASH_SIZE);
+}
+
+int
+main()
+{
+    SysInit_();
+    CyGlobalIntEnable;
+    RunScheduler();
+    return 0;
+}
 /* [] END OF FILE */

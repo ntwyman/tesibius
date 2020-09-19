@@ -1,8 +1,8 @@
 #include "project.h"
-#include "buttons_low.h"
+#include "hal/buttons_low.h"
 
-#define BUTTON_PIN_CLK  0x01
-#define BUTTON_PIN_PL   0x02
+#define BUTTON_PIN_CLK  0x01u
+#define BUTTON_PIN_PL   0x02u
 
 void 
 buttons_init(void)
@@ -11,10 +11,10 @@ buttons_init(void)
     pin_btn_op_Write(BUTTON_PIN_PL);
 }
 
-int
+unsigned int
 buttons_scan(void)
 {
-    int result = 0;
+    unsigned int result = 0;
     /* Pulse the parallel load pin low for 1us to latch the register */
     pin_btn_op_Write(0);
     CyDelayUs(1);

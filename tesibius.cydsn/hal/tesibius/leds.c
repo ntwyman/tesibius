@@ -1,6 +1,6 @@
 #include "project.h"
-#include "leds.h"
-#include "controls.h"
+#include "hal/leds.h"
+#include "hal/controls.h"
 
 void
 leds_set(int value)

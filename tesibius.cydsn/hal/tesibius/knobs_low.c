@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include "project.h"
-#include "knobs_low.h"
-#include "controls.h"
+#include "hal/knobs_low.h"
+#include "hal/controls.h"
 
 struct knobs_ctx
 {

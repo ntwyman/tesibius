@@ -36,5 +36,5 @@ Perform a raw scan of the buttons (no debounce).
 This will take approximately 34us to complete.
 @return The current state of the buttons.
 */
-int
+unsigned int
 buttons_scan(void);
