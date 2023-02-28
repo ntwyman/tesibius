@@ -7,12 +7,12 @@ System semi-hosting stubs to allow printf() to work, and send to debug UART.
 
 #include "project.h"
 
-int _close(int file)
+int _close(int _file)
 {
 	return -1;
 }
 
-int _fstat(int file, struct stat *st)
+int _fstat(int _file, struct stat *st)
 {
 	st->st_mode = S_IFCHR;
 	return 0;

@@ -7,6 +7,7 @@
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
  * WHICH IS THE PROPERTY OF your company.
  *
+  THIS CODE IS FOR AUTO DE FET
  * ========================================
 */
 #if !defined(ADC_H)

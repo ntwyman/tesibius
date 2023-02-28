@@ -4,14 +4,12 @@
 #include "debug.h"
 
 #if DEBUG_UART_ENABLED
-void
-DebugInit()
+void InitDebug()
 {
     uart_debug_Start(); // Do we want to run this, even in production builds. Perhaps some way to turn it on with boot keys
 }
 
-int
-DebugPrintf(const char *format, ...)
+int DebugPrintf(const char *format, ...)
 {
     char buf[0x200];
     va_list args;
@@ -22,8 +20,7 @@ DebugPrintf(const char *format, ...)
     return r;
 }
 #else
-void
-DebugInit()
+void InitDebug()
 {
 }
 #endif

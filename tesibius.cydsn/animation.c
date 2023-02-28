@@ -11,7 +11,8 @@
 */
 #include "debug.h"
 #include "animation.h"
-#include "controls.h"
+#include "hardware_if.h"
+#include "leds.h"
 
 typedef struct _animationStep
 {
@@ -40,16 +41,13 @@ static void runStep()
 	if (pNextStep->duration == 0) // All done
 	{
 		pNextStep = NO_ANIMATION; // So know we're between animations
-		SetLEDState(save_state);
+		SetLEDs(save_state, ALL_LEDS);
         return;
 	}
 
 	end_time = last_jiffy + pNextStep->duration;
     DBG_PRINTF("Endtime %08x\r\n", end_time);
-	uint16 state = GetLEDState();
-	state &= ~pNextStep->led_mask;
-	state |= pNextStep->led_state;
-	SetLEDState(state);
+	SetLEDs(pNextStep->led_state, pNextStep->led_mask);
     pNextStep++;
 }
 

@@ -3,6 +3,8 @@ codegentemp/
 CortexM0/
 Generated_Source/
 Export/
+Backup/
+Archive/
 *.cyfit
 *.svd
 *.schPreview

@@ -1,6 +1,7 @@
+#pragma once
 /* ========================================
  *
- * Copyright Jonny Reckless & Nick Twyman, 2015
+ * Copyright YOUR COMPANY, THE YEAR
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
@@ -9,10 +10,9 @@
  *
  * ========================================
 */
-#if !defined(JIFFY_H)
-#define JIFFY_H
-#include <cytypes.h>
-    
-void JiffyInit();
-#endif // defined(JIFFY_H)
+#include <stdint.h>
+#include "hardware_if.h"
+
+void KeysInit();
+void KeysJiffy(uint32_t jiffyCount);
 /* [] END OF FILE */
