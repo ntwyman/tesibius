@@ -30,6 +30,49 @@ static struct
 #define BUTTON_PIN_CLK  0x01u
 #define BUTTON_PIN_PL   0x02u
 
+typedef enum {
+    AUDIO,
+    LINEAR,
+    CAUDIO
+} Taper;
+
+typedef struct {
+    Taper taper : 2;
+} PackedTaper;
+
+static const PackedTaper CYCODE controlTaper[NUM_CTLS] = 
+{
+    {AUDIO},   // CTL_GAIN
+    {CAUDIO},  // CTL_BITE
+    {AUDIO},   // CTL_BASS
+    {LINEAR},  // CTL_MID
+    {LINEAR},  // CTL_TREBLE
+    {LINEAR},  // CTL_PRESENCE
+    {AUDIO},  // CTL_LEVEL
+    {LINEAR},  // CTL_REVERB
+    {AUDIO}    // CTL_MASTER
+};
+
+static const uint8 CYCODE audioTaper[256] = 
+{
+      0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  9,  9,  9, 10, 10, 10,
+     10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12,
+     12, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15,
+     15, 16, 16, 16, 16, 17, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19,
+     19, 19, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 23, 23, 23, 24,
+     24, 24, 24, 25, 25, 26, 26, 26, 27, 27, 27, 28, 28, 28, 29, 29,
+     30, 30, 30, 31, 31, 32, 32, 33, 33, 33, 34, 34, 35, 35, 36, 36,
+     37, 37, 38, 38, 39, 39, 40, 40, 41, 42, 42, 43, 43, 44, 44, 45,
+     46, 46, 47, 48, 48, 49, 50, 50, 51, 52, 52, 53, 54, 54, 55, 56,
+     57, 57, 58, 59, 60, 61, 62, 62, 63, 64, 65, 66, 67, 68, 69, 69,
+     70, 71, 72, 73, 74, 75, 76, 77, 78, 80, 81, 82, 83, 84, 85, 86,
+     87, 89, 90, 91, 92, 94, 95, 96, 97, 99,100,102,103,104,106,107,
+    109,110,112,113,115,116,118,119,121,123,124,126,128,130,131,133,
+    135,137,139,141,142,144,146,148,150,152,154,157,159,161,163,165,
+    168,170,172,175,177,179,182,184,187,189,192,194,197,200,203,205,
+    208,211,214,217,220,223,226,229,232,235,238,242,245,248,252,255,
+};
+
 // Bare minimum to bring up the amp in quiescent state
 void HalInit()
 {
@@ -78,9 +121,19 @@ void HalStart()
 
 void HalSetControl(Control id, int value)
 {
+    assert(value >=0 && value <256);
     while (!(spi_master_ReadTxStatus() & spi_master_STS_SPI_IDLE))
         ;
     pin_spi_addr_Write(id);
+    Taper taper = controlTaper[id].taper;
+    if (taper == CAUDIO) 
+    {
+        value = 255 - audioTaper[255-value];
+    } 
+    else if (taper == AUDIO)
+    {
+        value = audioTaper[value];
+    }
     CyDelayUs(1);
     spi_master_WriteByte(DIG_POT_CMD); // Addr 00, WRITE
     spi_master_WriteByte(value);
