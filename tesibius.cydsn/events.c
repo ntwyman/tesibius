@@ -43,6 +43,13 @@ static void processEvent_(Event *e)
             {
                 ToggleGainChannel();
             }
+            else if (e->keyCode >= KEY_PRESET_1 && e->keyCode <= KEY_PRESET_8)
+            {
+                int preset = e->keyCode - KEY_PRESET_1;
+                DBG_PRINTF("Loading Preset %d", preset);
+                LoadPreset(preset);
+            }
+            
             break;
         case KEY_HOLD:
             DBG_PRINTF("Key hold (key - %d, jiffy: %u)\r\n", e->keyCode, e->jiffy);

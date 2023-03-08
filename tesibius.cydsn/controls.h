@@ -21,3 +21,6 @@ Called by Jiffy to update controls
 void ControlsJiffy(uint32_t jiffyCount);
 
 void ToggleGainChannel();
+
+void SavePreset(int preset);
+void LoadPreset(int preset);

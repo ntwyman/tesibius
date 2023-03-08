@@ -125,7 +125,7 @@ MidiTaskRunner_(Task* task)
                     DBG_PRINTF("PCDB: Program Change - Value %02x\r\n", (uint8)rx);
                     if (rx < NUM_PRESETS)
                     {
-                        RecallPreset((int)rx);
+                        LoadPreset((int)rx);
                     }
                     break;
                 default:
