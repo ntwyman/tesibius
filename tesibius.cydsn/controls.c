@@ -104,12 +104,31 @@ void ToggleGainChannel()
     SetGainChannel(_state.gainChannel ^ 0x01);
 }
 
+#define PRESET_LEDS (LED_PRESET_1 | LED_PRESET_2 | LED_PRESET_3 | LED_PRESET_4 | LED_PRESET_5 | LED_PRESET_6 | LED_PRESET_7 | LED_PRESET_8)
+
 void SavePreset(int preset)
 {
-
+    assert(preset>=0 && preset<NUM_PRESETS);
+    const PresetStore *pCurrent = flashPresets;
+    if (pCurrent->magic != PRESET_MAGIC)
+    {
+        pCurrent = & factoryPresets;
+    }
+    PresetStore newPresets = *pCurrent;
+    newPresets.presets[preset] = _state;
+    const uint32 status = CySysFlashWriteRow(CY_FLASH_NUMBER_ROWS - 1, newPresets.row_data);
+    if (status != CY_SYS_FLASH_SUCCESS)
+    {
+        DBG_PRINTF("FLASH write failed!\r\n");
+    }
+    else
+    {
+        DBG_PRINTF("Saved preset %d\r\n", preset + 1);
+        currentPreset = preset;
+        SetLEDs(LED_PRESET_1<<preset, PRESET_LEDS);
+        // RunAnimation(SetChannel);
+    }
 }
-
-#define PRESET_LEDS (LED_PRESET_1 | LED_PRESET_2 | LED_PRESET_3 | LED_PRESET_4 | LED_PRESET_5 | LED_PRESET_6 | LED_PRESET_7 | LED_PRESET_8)
 
 void LoadPreset(int preset)
 {

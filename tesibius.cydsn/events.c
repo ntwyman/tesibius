@@ -53,6 +53,12 @@ static void processEvent_(Event *e)
             break;
         case KEY_HOLD:
             DBG_PRINTF("Key hold (key - %d, jiffy: %u)\r\n", e->keyCode, e->jiffy);
+             if (e->keyCode >= KEY_PRESET_1 && e->keyCode <= KEY_PRESET_8)
+            {
+                int preset = e->keyCode - KEY_PRESET_1;
+                DBG_PRINTF("Saving Preset %d", preset);
+                SavePreset(preset);
+            }
             break;
         default:
             DBG_PRINTF("Unknown event - (event: %d, jiffy: %u)\r\n", e->event, e->jiffy);
