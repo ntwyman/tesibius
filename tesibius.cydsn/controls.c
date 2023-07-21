@@ -65,7 +65,6 @@ void SetControl(Control id, uint8_t value)
     assert( (id < NUM_CTLS) && (id >= 0));
     HalSetControl(id, value);
     _state.knobs.values[id] = value; // Track current settings.
- 
 }
 
 void ControlsJiffy(uint32_t jiffyCount)

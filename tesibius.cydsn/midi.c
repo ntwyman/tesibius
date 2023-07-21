@@ -144,5 +144,6 @@ MidiInit()
     midi_task_.listening = 0;
     isr_uart_midi_StartEx(MidiDataReadyIsr);
     uart_midi_Start();
+    DBG_PRINTF("MIDI INIT");
 }
 /* [] END OF FILE */

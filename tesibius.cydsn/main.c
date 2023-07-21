@@ -6,6 +6,7 @@
 #include "hardware_if.h"
 #include "jiffy.h"
 #include "keys.h"
+#include "midi.h"
 #include "scheduler.h"
 
 /*
@@ -88,10 +89,10 @@ SysInit_()
     EventsInit();
     KeysInit();
     /*    AnimationInit();
-        MidiInit();
     */
     InitControls();
     HalStart();
+    MidiInit();   
     JiffyInit();
     DBG_PRINTF("\r\nTesibius, Copyright (c) Nick Twyman, 2020-2022\r\n");
     DBG_PRINTF("System version %d.%d.%d\r\n", MAJOR_VERSION, MINOR_VERSION,
